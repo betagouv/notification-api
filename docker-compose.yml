@@ -27,7 +27,7 @@ services:
       dockerfile: local/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - SQLALCHEMY_DATABASE_URI=postgres://postgres:chummy@db:5432/notification_api
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:chummy@db:5432/notification_api
     entrypoint: local/scripts/notify-web-entrypoint.sh
     command: >
       bash -c "make generate-version-file && make run"
@@ -46,7 +46,7 @@ services:
       dockerfile: local/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - SQLALCHEMY_DATABASE_URI=postgres://postgres:chummy@db:5432/notification_api
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:chummy@db:5432/notification_api
     entrypoint: local/scripts/notify-worker-entrypoint.sh
     command: >
       bash -c "sh scripts/run_celery_beat.sh"
@@ -64,7 +64,7 @@ services:
       dockerfile: local/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - SQLALCHEMY_DATABASE_URI=postgres://postgres:chummy@db:5432/notification_api
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:chummy@db:5432/notification_api
     entrypoint: local/scripts/notify-worker-entrypoint.sh
     command: >
       bash -c "[[ -f /tmp/celery.pid ]] && rm /tmp/celery.pid; sh /app/scripts/run_celery.sh"
@@ -82,7 +82,7 @@ services:
       dockerfile: local/Dockerfile
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - SQLALCHEMY_DATABASE_URI=postgres://postgres:chummy@db:5432/notification_api
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:chummy@db:5432/notification_api
     entrypoint: local/scripts/notify-worker-entrypoint.sh
     command: >
       bash -c "sh /app/scripts/run_celery_sms.sh"
@@ -100,8 +100,8 @@ services:
       dockerfile: ci/Dockerfile.test
     environment:
       - REDIS_URL=redis://redis:6379/1
-      - SQLALCHEMY_DATABASE_URI=postgres://postgres:chummy@db:5432/test_notification_api
-      - SQLALCHEMY_DATABASE_READER_URI=postgres://reader:chummy@db:5432/test_notification_api
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:chummy@db:5432/test_notification_api
+      - SQLALCHEMY_DATABASE_READER_URI=postgresql://reader:chummy@db:5432/test_notification_api
     entrypoint: local/scripts/notify-worker-entrypoint.sh
     command: >
       bash -c "/app/scripts/run_tests.sh"
