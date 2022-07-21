@@ -48,7 +48,7 @@ def create_invited_user(service_id):
         reply_to_text=invited_user.from_user.email_address,
     )
 
-    send_notification_to_queue(saved_notification, False, queue=QueueNames.NOTIFY)
+    # send_notification_to_queue(saved_notification, False, queue=QueueNames.NOTIFY)
 
     return jsonify(data=invited_user_schema.dump(invited_user).data), 201
 

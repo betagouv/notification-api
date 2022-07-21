@@ -291,6 +291,7 @@ def send_user_sms_code(user_to_send_to, data):
     recipient = data.get("to") or user_to_send_to.mobile_number
 
     secret_code = create_secret_code()
+    print(f"SMS_SECRET_CODE: {secret_code}")
     personalisation = {"verify_code": secret_code}
 
     create_2fa_code(
@@ -306,6 +307,7 @@ def send_user_email_code(user_to_send_to, data):
     recipient = user_to_send_to.email_address
 
     secret_code = create_secret_code()
+    print(f"EMAIL_SECRET_CODE: {secret_code}")
 
     personalisation = {"name": user_to_send_to.name, "verify_code": secret_code}
 
@@ -343,7 +345,7 @@ def create_2fa_code(template_id, user_to_send_to, secret_code, recipient, person
     # Assume that we never want to observe the Notify service's research mode
     # setting for this notification - we still need to be able to log into the
     # admin even if we're doing user research using this service:
-    send_notification_to_queue(saved_notification, False, queue=QueueNames.NOTIFY)
+    # send_notification_to_queue(saved_notification, False, queue=QueueNames.NOTIFY)
 
 
 @user_blueprint.route("/<uuid:user_id>/change-email-verification", methods=["POST"])
@@ -383,6 +385,8 @@ def send_new_user_email_verification(user_id):
 
     template = dao_get_template_by_id(current_app.config["NEW_USER_EMAIL_VERIFICATION_TEMPLATE_ID"])
     service = Service.query.get(current_app.config["NOTIFY_SERVICE_ID"])
+    verification_url = _create_verification_url(user_to_send_to)
+    print(f"VERIFICATION_URL: {verification_url}")
 
     saved_notification = persist_notification(
         template_id=template.id,
@@ -391,7 +395,7 @@ def send_new_user_email_verification(user_id):
         service=service,
         personalisation={
             "name": user_to_send_to.name,
-            "url": _create_verification_url(user_to_send_to),
+            "url": verification_url,
         },
         notification_type=template.template_type,
         api_key_id=None,
@@ -399,7 +403,7 @@ def send_new_user_email_verification(user_id):
         reply_to_text=service.get_default_reply_to_email_address(),
     )
 
-    send_notification_to_queue(saved_notification, False, queue=QueueNames.NOTIFY)
+    # send_notification_to_queue(saved_notification, False, queue=QueueNames.NOTIFY)
 
     return jsonify({}), 204
 
