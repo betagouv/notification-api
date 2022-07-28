@@ -265,7 +265,7 @@ class Config(object):
 
     BATCH_INSERTION_CHUNK_SIZE = int(os.getenv("BATCH_INSERTION_CHUNK_SIZE", 500))
 
-    BROKER_URL = "sqs://"
+    BROKER_URL = "redis://redis"
     BROKER_TRANSPORT_OPTIONS = {
         "region": AWS_REGION,
         "polling_interval": 1,  # 1 second
