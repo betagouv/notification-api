@@ -28,4 +28,6 @@ ENV PORT=6011
 ARG GIT_SHA
 ENV GIT_SHA ${GIT_SHA}
 
+ENTRYPOINT ["./entrypoint.sh"]
+
 CMD ["sh", "-c", "gunicorn -c gunicorn_config.py application"]

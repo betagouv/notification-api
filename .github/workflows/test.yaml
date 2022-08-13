@@ -1,10 +1,46 @@
-on:
-  push:
-name: Python tests
+name: ci
+
+on: push
+
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Build and export
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          tags: notification-api:latest
+          outputs: type=docker,dest=/tmp/notification-api.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      -
+        name: Cache image
+        id: notif-api-docker
+        uses: actions/cache@v3
+        with:
+          path: /tmp/notification-api.tar
+          key: ${{ github.sha }}-api
   test:
     runs-on: ubuntu-latest
+    needs: build
     services:
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       postgres:
         image: postgres:13.4
         env:
@@ -14,36 +50,11 @@ jobs:
         ports:
         - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
-    - name: Install libcurl
-      run: sudo apt-get update && sudo apt-get install libssl-dev libcurl4-openssl-dev
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Upgrade pip
-      run: python -m pip install --upgrade pip
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Install requirements
-      run: pip install -r requirements_for_test.txt
-    - name: Run tests
-      run: make test
-    - name: Upload pytest logs on failure
-      if: ${{ failure() }} 
-      uses: actions/upload-artifact@v2
-      with:
-        name: pytest-logs
-        path: |
-          pytest*.log  
-    - name: Notify Slack channel if this job fails
-      if: ${{ failure() && github.ref == 'refs/heads/main' }}
-      run: |
-        json="{'text':'Scheduled CI testing failed: <https://github.com/cds-snc/notification-api/actions|GitHub actions>'}"
-        curl -X POST -H 'Content-type: application/json' --data "$json"  ${{ secrets.SLACK_WEBHOOK }}
+      - uses: docker/setup-buildx-action@v2
+      - uses: actions/cache@v3
+        with:
+          path: /tmp/notification-api.tar
+          key: ${{ github.sha }}-api
+      - run: docker load --input /tmp/notification-api.tar
+      - run: docker run --rm notification-api:latest make test
