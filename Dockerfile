@@ -9,15 +9,11 @@ RUN apk add --no-cache bash build-base git gcc musl-dev postgresql-dev g++ make 
 # update pip
 RUN python -m pip install wheel
 
-RUN set -ex && mkdir /app
-
 WORKDIR /app
 
-COPY requirements.txt /app
-COPY requirements_for_test.txt /app
+COPY requirements.txt requirements_for_test.txt .
 
-RUN set -ex && pip3 install -r requirements.txt
-RUN set -ex && pip3 install -r requirements_for_test.txt
+RUN pip3 install -r requirements_for_test.txt
 
 COPY . /app
 
