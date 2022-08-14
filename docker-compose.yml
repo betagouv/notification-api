@@ -29,8 +29,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - SQLALCHEMY_DATABASE_URI=postgres://postgres:chummy@db:5432/notification_api
     entrypoint: local/scripts/notify-web-entrypoint.sh
-    command: >
-      bash -c "make generate-version-file && make run"
+    command: make run
     volumes:
       - .:/app
     ports:
