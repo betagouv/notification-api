@@ -1,1 +1,1 @@
-web: ./scripts/paas_app_wrapper.sh
+web: gunicorn -c gunicorn_config.py application
