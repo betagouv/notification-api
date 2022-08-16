@@ -23,28 +23,9 @@ jobs:
         with:
           path: /tmp/notification-api.tar
           key: ${{ github.sha }}-api
-  test:
+  lint-black:
     runs-on: ubuntu-latest
     needs: build
-    services:
-      redis:
-        # Docker Hub image
-        image: redis
-        # Set health checks to wait until redis has started
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      postgres:
-        image: postgres:13.4
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_notification_api
-        ports:
-        - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: docker/setup-buildx-action@v2
       - uses: actions/cache@v3
@@ -52,4 +33,77 @@ jobs:
           path: /tmp/notification-api.tar
           key: ${{ github.sha }}-api
       - run: docker load --input /tmp/notification-api.tar
-      - run: docker run --rm notification-api:latest make test
+      - run: docker run --rm notification-api:latest make lint-black
+  lint-flake:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: docker/setup-buildx-action@v2
+      - uses: actions/cache@v3
+        with:
+          path: /tmp/notification-api.tar
+          key: ${{ github.sha }}-api
+      - run: docker load --input /tmp/notification-api.tar
+      - run: docker run --rm notification-api:latest make lint-flake
+  order-check:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: docker/setup-buildx-action@v2
+      - uses: actions/cache@v3
+        with:
+          path: /tmp/notification-api.tar
+          key: ${{ github.sha }}-api
+      - run: docker load --input /tmp/notification-api.tar
+      - run: docker run --rm notification-api:latest make order-check
+  type-check:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: docker/setup-buildx-action@v2
+      - uses: actions/cache@v3
+        with:
+          path: /tmp/notification-api.tar
+          key: ${{ github.sha }}-api
+      - run: docker load --input /tmp/notification-api.tar
+      - run: docker run --rm notification-api:latest make type-check
+  test-serial:
+    runs-on: ubuntu-latest
+    needs: build
+    services:
+      redis:
+        image: redis
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_DB: test_notification_api
+        ports:
+        - 5432:5432
+    steps:
+      - uses: docker/setup-buildx-action@v2
+      - uses: actions/cache@v3
+        with:
+          path: /tmp/notification-api.tar
+          key: ${{ github.sha }}-api
+      - run: docker load --input /tmp/notification-api.tar
+      - run: docker run --rm notification-api:latest make test-serial
+  test-concurrent:
+    runs-on: ubuntu-latest
+    needs: build
+    services:
+      redis:
+        image: redis
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_DB: test_notification_api
+        ports:
+        - 5432:5432
+    steps:
+      - uses: docker/setup-buildx-action@v2
+      - uses: actions/cache@v3
+        with:
+          path: /tmp/notification-api.tar
+          key: ${{ github.sha }}-api
+      - run: docker load --input /tmp/notification-api.tar
+      - run: docker run --rm notification-api:latest make test-concurrent
