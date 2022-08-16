@@ -17,7 +17,7 @@ from app.queue import Buffer, MockQueue, RedisQueue, generate_element
 @pytest.fixture(scope="session")
 def pmr_redis_config():
     parsed_uri = urlparse(getenv("REDIS_URL"))
-    return RedisConfig(image="redis:6.2", host=parsed_uri.hostname, port="6380", ci_port="6380")
+    return RedisConfig(image="redis:6.2", host=parsed_uri.hostname, port="6379", ci_port="6380")
 
 
 redis = create_redis_fixture(scope="function")
