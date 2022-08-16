@@ -31,6 +31,7 @@ PyYAML==5.4.1
 SQLAlchemy==1.4.37
 sentry-sdk[flask]==1.0.0
 cachelib==0.1.1
+sib_api_v3_sdk==7.5.0
 
 newrelic==6.2.0.156
 notifications-python-client==6.0.2
@@ -119,6 +120,7 @@ python-json-logger==2.0.1
 redis==4.3.4
 requests-file==1.5.1
 s3transfer==0.4.2
+sib-api-v3-sdk
 six==1.16.0
 smartypants==2.0.1
 statsd==3.3.0
