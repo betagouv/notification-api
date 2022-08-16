@@ -6,6 +6,7 @@ import uuid
 from time import monotonic
 
 from celery import current_task
+from dotenv import load_dotenv
 from flask import (
     current_app,
     g,
@@ -34,9 +35,12 @@ from app.clients.cbc_proxy import CBCProxyClient
 from app.clients.document_download import DocumentDownloadClient
 from app.clients.email.aws_ses import AwsSesClient
 from app.clients.email.aws_ses_stub import AwsSesStubClient
+from app.clients.email.sib import SendInBlueEmailClient
 from app.clients.sms.firetext import FiretextClient
 from app.clients.sms.mmg import MMGClient
+from app.clients.sms.sib import SendInBlueSMSClient
 
+load_dotenv()
 
 class SQLAlchemy(_SQLAlchemy):
     """We need to subclass SQLAlchemy in order to override create_engine options"""
@@ -57,6 +61,8 @@ notify_celery = NotifyCelery()
 firetext_client = FiretextClient()
 mmg_client = MMGClient()
 aws_ses_client = AwsSesClient()
+sib_email_client = SendInBlueEmailClient()
+sib_sms_client = SendInBlueSMSClient()
 aws_ses_stub_client = AwsSesStubClient()
 encryption = Encryption()
 zendesk_client = ZendeskClient()
@@ -105,10 +111,15 @@ def create_app(application):
         statsd_client=statsd_client,
         stub_url=application.config['SES_STUB_URL']
     )
+
+    sib_email_client.init_app(application)
+    sib_sms_client.init_app(application, statsd_client=statsd_client)
+
     # If a stub url is provided for SES, then use the stub client rather than the real SES boto client
-    email_clients = [aws_ses_stub_client] if application.config['SES_STUB_URL'] else [aws_ses_client]
+    email_clients = [sib_email_client]
+
     notification_provider_clients.init_app(
-        sms_clients=[firetext_client, mmg_client],
+        sms_clients=[sib_sms_client],
         email_clients=email_clients
     )
 
