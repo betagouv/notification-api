@@ -2,6 +2,9 @@ name: ci
 
 on: push
 
+env:
+  SQLALCHEMY_TEST_DATABASE_URI: postgresql://postgres:postgres@localhost:5432/test_notification_api
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -90,6 +93,7 @@ jobs:
       - run: docker load --input /tmp/notification-api.tar
       - run: |
           docker run \
+            -e SQLALCHEMY_TEST_DATABASE_URI="${{ env.SQLALCHEMY_TEST_DATABASE_URI }}" \
             -v /var/run/docker.sock:/var/run/docker.sock \
             --rm notification-api:latest \
             make test-serial
@@ -105,6 +109,7 @@ jobs:
         image: postgres:13.4
         env:
           POSTGRES_DB: test_notification_api
+          POSTGRES_PASSWORD: postgres
         ports:
         - 5432:5432
     steps:
@@ -116,6 +121,7 @@ jobs:
       - run: docker load --input /tmp/notification-api.tar
       - run: |
           docker run \
+            -e SQLALCHEMY_TEST_DATABASE_URI="${{ env.SQLALCHEMY_TEST_DATABASE_URI }}" \
             -v /var/run/docker.sock:/var/run/docker.sock \
             --rm notification-api:latest \
             make test-concurrent
