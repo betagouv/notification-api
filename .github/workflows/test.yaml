@@ -15,7 +15,8 @@ jobs:
         with:
           context: .
           tags: notification-api:latest
-          build-args: GIT_SHA=${{ github.sha }}
+          build-args:
+            API_COMMIT=${{ github.sha }}
           outputs: type=docker,dest=/tmp/notification-api.tar
           cache-from: type=gha
           cache-to: type=gha,mode=max
