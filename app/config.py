@@ -554,6 +554,7 @@ class Development(Config):
 
 
 class Test(Development):
+    REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     NOTIFY_EMAIL_DOMAIN = os.getenv("NOTIFY_EMAIL_DOMAIN", "notification.canada.ca")
     FROM_NUMBER = "testing"
     NOTIFY_ENVIRONMENT = "test"

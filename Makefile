@@ -1,22 +1,34 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
-DATE = $(shell date +%Y-%m-%d:%H:%M:%S)
-
-APP_VERSION_FILE = app/version.py
-
-GIT_COMMIT ?= $(shell git rev-parse HEAD)
 
 .PHONY: help
 help:
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: generate-version-file
-generate-version-file: ## Generates the app version file
-	@printf "__commit_sha__ = \"${GIT_COMMIT}\"\n__time__ = \"${DATE}\"\n" > ${APP_VERSION_FILE}
+.PHONY: lint-black
+lint-black:
+	black --config pyproject.toml --check .
 
-.PHONY: test
-test: generate-version-file ## Run tests
-	./scripts/run_tests.sh
+.PHONY: lint-flake
+lint-flake:
+	flake8 .
+
+.PHONY: order-check
+order-check:
+	isort --check-only .
+
+.PHONY: type-check
+type-check:
+	mypy ./
+
+.PHONY: test-serial
+test-serial:
+	py.test --disable-pytest-warnings --cov=app --cov-report=term-missing tests/ --junitxml=test_results_serial.xml -v --maxfail=10 -m "serial"
+
+.PHONY: test-concurrent
+test-concurrent:
+	py.test --disable-pytest-warnings --cov=app --cov-report=term-missing tests/ --junitxml=test_results.xml -n4 -v --maxfail=10 -m "not serial"
+
 
 .PHONY: freeze-requirements
 freeze-requirements:
