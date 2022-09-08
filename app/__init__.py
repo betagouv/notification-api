@@ -22,10 +22,12 @@ from app.celery.celery import NotifyCelery
 from app.clients import Clients
 from app.clients.document_download import DocumentDownloadClient
 from app.clients.email.aws_ses import AwsSesClient
+from app.clients.email.sib import SendInBlueEmailClient
 from app.clients.performance_platform.performance_platform_client import (
     PerformancePlatformClient,
 )
 from app.clients.sms.aws_sns import AwsSnsClient
+from app.clients.sms.sib import SendInBlueSMSClient
 from app.dbsetup import RoutingSQLAlchemy
 from app.encryption import CryptoSigner
 from app.json_encoder import NotifyJSONEncoder
@@ -42,6 +44,8 @@ marshmallow = Marshmallow()
 notify_celery = NotifyCelery()
 aws_ses_client = AwsSesClient()
 aws_sns_client = AwsSnsClient()
+sib_email_client = SendInBlueEmailClient()
+sib_sms_client = SendInBlueSMSClient()
 signer = CryptoSigner()
 zendesk_client = ZendeskClient()
 statsd_client = StatsdClient()
@@ -89,11 +93,13 @@ def create_app(application, config=None):
     logging.init_app(application, statsd_client)
     aws_sns_client.init_app(application, statsd_client=statsd_client)
     aws_ses_client.init_app(application.config["AWS_REGION"], statsd_client=statsd_client)
+    sib_email_client.init_app(application)
+    sib_sms_client.init_app(application)
     notify_celery.init_app(application)
     signer.init_app(application)
     performance_platform_client.init_app(application)
     document_download_client.init_app(application)
-    clients.init_app(sms_clients=[aws_sns_client], email_clients=[aws_ses_client])
+    clients.init_app(sms_clients=[sib_sms_client], email_clients=[sib_email_client])
 
     flask_redis.init_app(application)
     redis_store.init_app(application)

@@ -210,6 +210,8 @@ class Config(object):
     ASSET_DOMAIN = os.getenv("ASSET_DOMAIN", "assets.notification.canada.ca")
     INVITATION_EXPIRATION_DAYS = 2
     NOTIFY_APP_NAME = "api"
+    NOTIFY_EMAIL_DOMAIN = "beta.gouv.fr"
+    SIB_API_KEY = os.getenv("SIB_API_KEY")
     SQLALCHEMY_RECORD_QUERIES = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_POOL_SIZE = env.int("SQLALCHEMY_POOL_SIZE", 5)
@@ -539,7 +541,6 @@ class Development(Config):
 
     NOTIFY_ENVIRONMENT = "development"
     NOTIFICATION_QUEUE_PREFIX = os.getenv("NOTIFICATION_QUEUE_PREFIX", "notification-canada-ca")
-    NOTIFY_EMAIL_DOMAIN = os.getenv("NOTIFY_EMAIL_DOMAIN", "notification.canada.ca")
 
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", "postgresql://postgres@localhost/notification_api")
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
@@ -555,7 +556,6 @@ class Development(Config):
 
 class Test(Development):
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    NOTIFY_EMAIL_DOMAIN = os.getenv("NOTIFY_EMAIL_DOMAIN", "notification.canada.ca")
     FROM_NUMBER = "testing"
     NOTIFY_ENVIRONMENT = "test"
     TESTING = True
@@ -587,7 +587,6 @@ class Test(Development):
 
 
 class Production(Config):
-    NOTIFY_EMAIL_DOMAIN = os.getenv("NOTIFY_EMAIL_DOMAIN", "notification.canada.ca")
     NOTIFY_ENVIRONMENT = "production"
     # CSV_UPLOAD_BUCKET_NAME = 'live-notifications-csv-upload'
     TEST_LETTERS_BUCKET_NAME = "production-test-letters"

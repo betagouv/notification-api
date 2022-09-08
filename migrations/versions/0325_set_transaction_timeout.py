@@ -12,12 +12,13 @@ down_revision = "0324_fix_template_redacted"
 
 user = "postgres"
 timeout = 1200  # in seconds, i.e. 20 minutes
-database_name = op.get_bind().engine.url.database  # database name that the migration is being run on
 
 
 def upgrade():
+    database_name = op.get_bind().engine.url.database
     op.execute(f"ALTER ROLE {user} IN DATABASE {database_name} SET statement_timeout = '{timeout}s'")
 
 
 def downgrade():
+    database_name = op.get_bind().engine.url.database
     op.execute(f"ALTER ROLE {user} IN DATABASE {database_name} RESET statement_timeout")

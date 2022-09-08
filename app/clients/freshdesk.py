@@ -87,3 +87,8 @@ class Freshdesk(object):
             content = json.loads(response.content)
             current_app.logger.error(f"Failed to create Freshdesk ticket: {content['errors']}")
             raise e
+        except NotImplementedError:
+            # There are cases in development when we do not want to send to freshdesk
+            # because configuration is not defined, lets return a 200 OK
+            current_app.logger.warning("Did not send ticket to Freshdesk")
+            return 200
