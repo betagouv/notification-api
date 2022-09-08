@@ -57,14 +57,22 @@ class SendInBlueEmailClient(EmailClient):
         #         - HTML
         #       - Attachment(s)
 
-        sender = sib_api_v3_sdk.SendSmtpEmailSender(email=source)
+        current_app.logger.info("SendInBlue email to {}".format(to_addresses))
+
+        sender = sib_api_v3_sdk.SendSmtpEmailSender(name='Stéphane Maniaci', email='stephane.maniaci@beta.gouv.fr')
         to = [sib_api_v3_sdk.SendSmtpEmailTo(email=to_addresses)]
 
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            sender=sender, to=to, text_content=body, html_content=html_body, subject=subject, reply_to=reply_to_address
+            sender=sender,
+            to=to,
+            text_content=body,
+            html_content=html_body,
+            subject=subject
         )
 
         try:
-            self.api_instance.send_transac_email(send_smtp_email)
+            # Send a transactional email
+            api_response = self.api_instance.send_transac_email(send_smtp_email)
+            current_app.logger.info("SendInBlue request finished: {}".format(api_response))
         except ApiException as err:
             current_app.logger.error("SendInBlue request failed: {}".format(err))

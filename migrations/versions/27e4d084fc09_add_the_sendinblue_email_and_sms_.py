@@ -17,10 +17,10 @@ down_revision = "0420_add_redacted_template"
 def upgrade():
     op.execute(
         "INSERT INTO provider_details \
-        (id, display_name, identifier, priority, notification_type, active, version) \
+        (id, display_name, identifier, priority, notification_type, active, version, supports_international) \
         VALUES \
-        ('{}', 'SendInBlue Email', 'sib_email', 5, 'email', true, 1), \
-        ('{}', 'SendInBlue SMS', 'sib_sms', 5, 'sms', true, 1)".format(
+        ('{}', 'SendInBlue Email', 'sib_email', 5, 'email', true, 1, true), \
+        ('{}', 'SendInBlue SMS', 'sib_sms', 5, 'sms', true, 1, true)".format(
             str(uuid.uuid4()), str(uuid.uuid4())
         )
     )
