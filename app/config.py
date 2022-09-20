@@ -193,7 +193,7 @@ class Config(object):
     DVLA_EMAIL_ADDRESSES = json.loads(os.environ.get('DVLA_EMAIL_ADDRESSES', '[]'))
 
     CELERY = {
-        'broker_url': 'sqs://',
+        'broker_url': 'redis://redis',
         'broker_transport_options': {
             'region': AWS_REGION,
             'visibility_timeout': 310,
