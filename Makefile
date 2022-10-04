@@ -22,10 +22,16 @@ run-celery-beat:
 		-A run_celery.notify_celery beat \
 		--loglevel=INFO
 
-.PHONY: test
-test: ## Run tests
+.PHONY: lint
+lint:
 	flake8 .
+
+.PHONY: order-check
+order-check:
 	isort --check-only ./app ./tests
+
+.PHONY: test
+test:
 	pytest -n4 --maxfail=10
 
 .PHONY: freeze-requirements
