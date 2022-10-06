@@ -28,35 +28,6 @@ def reload_config():
     importlib.reload(config)
 
 
-def test_load_cloudfoundry_config_if_available(reload_config):
-    os.environ['ADMIN_BASE_URL'] = 'env'
-    os.environ['VCAP_SERVICES'] = 'some json blob'
-    os.environ['VCAP_APPLICATION'] = 'some json blob'
-
-    with mock.patch('app.cloudfoundry_config.extract_cloudfoundry_config', side_effect=cf_conf) as cf_config:
-        # reload config so that its module level code (ie: all of it) is re-instantiated
-        importlib.reload(config)
-
-    assert cf_config.called
-
-    assert os.environ['ADMIN_BASE_URL'] == 'cf'
-    assert config.Config.ADMIN_BASE_URL == 'cf'
-
-
-def test_load_config_if_cloudfoundry_not_available(reload_config):
-    os.environ['ADMIN_BASE_URL'] = 'env'
-    os.environ.pop('VCAP_SERVICES', None)
-
-    with mock.patch('app.cloudfoundry_config.extract_cloudfoundry_config') as cf_config:
-        # reload config so that its module level code (ie: all of it) is re-instantiated
-        importlib.reload(config)
-
-    assert not cf_config.called
-
-    assert os.environ['ADMIN_BASE_URL'] == 'env'
-    assert config.Config.ADMIN_BASE_URL == 'env'
-
-
 def test_queue_names_all_queues_correct():
     # Need to ensure that all_queues() only returns queue names used in API
     queues = QueueNames.all_queues()
