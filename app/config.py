@@ -1,10 +1,12 @@
 import json
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
 
 from celery.schedules import crontab
 from kombu import Exchange, Queue
 
+load_dotenv()
 
 class QueueNames(object):
     PERIODIC = 'periodic-tasks'
