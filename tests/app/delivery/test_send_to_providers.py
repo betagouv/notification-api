@@ -44,6 +44,7 @@ def setup_function(_function):
     send_to_providers.provider_cache.clear()
 
 
+@pytest.mark.skip(reason="FR: we only use Sendinblue at the moment")
 def test_provider_to_use_should_return_random_provider(mocker, notify_db_session):
     mmg = get_provider_details_by_identifier('mmg')
     firetext = get_provider_details_by_identifier('firetext')
@@ -77,19 +78,19 @@ def test_provider_to_use_should_cache_repeated_calls(mocker, notify_db_session):
     # be used, no matter what its priority is set to
     0, 50, 100,
 ))
-def test_provider_to_use_should_only_return_mmg_for_international(
+def test_provider_to_use_should_only_return_sib_for_international(
     mocker,
     notify_db_session,
     international_provider_priority,
 ):
-    mmg = get_provider_details_by_identifier('mmg')
-    mmg.priority = international_provider_priority
-    mock_choices = mocker.patch('app.delivery.send_to_providers.random.choices', return_value=[mmg])
+    sib_sms = get_provider_details_by_identifier('sib_sms')
+    sib_sms.priority = international_provider_priority
+    mock_choices = mocker.patch('app.delivery.send_to_providers.random.choices', return_value=[sib_sms])
 
     ret = send_to_providers.provider_to_use('sms', international=True)
 
-    mock_choices.assert_called_once_with([mmg], weights=[100])
-    assert ret.name == 'mmg'
+    mock_choices.assert_called_once_with([sib_sms], weights=[100])
+    assert ret.name == 'sib_sms'
 
 
 def test_provider_to_use_should_only_return_active_providers(mocker, restore_provider_details):
