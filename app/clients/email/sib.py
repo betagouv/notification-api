@@ -1,16 +1,8 @@
-from email.mime.application import MIMEApplication
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from time import monotonic
-
 import sib_api_v3_sdk
 from flask import current_app
-from notifications_utils.recipients import InvalidEmailError
 from sib_api_v3_sdk.rest import ApiException
 
-from flask import current_app
-
-from app.clients.email import EmailClient, EmailClientException
+from app.clients.email import EmailClient
 
 
 class SendInBlueEmailClient(EmailClient):

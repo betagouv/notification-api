@@ -1,12 +1,13 @@
 import json
 import os
 from datetime import timedelta
-from dotenv import load_dotenv
 
 from celery.schedules import crontab
+from dotenv import load_dotenv
 from kombu import Exchange, Queue
 
 load_dotenv()
+
 
 class QueueNames(object):
     PERIODIC = 'periodic-tasks'
@@ -464,7 +465,7 @@ class Test(Development):
     LETTER_SANITISE_BUCKET_NAME = 'test-letters-sanitise'
 
     # this is overriden in jenkins and on cloudfoundry
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'postgresql://localhost/test_notification_api')
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_TEST_DATABASE_URI', 'postgresql://localhost/test_notification_api')
 
     CELERY = {
         **Config.CELERY,

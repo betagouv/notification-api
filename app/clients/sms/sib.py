@@ -24,7 +24,12 @@ class SendInBlueSMSClient(SmsClient):
         return "sib_sms"
 
     def try_send_sms(self, to, content, reference, multi=True, sender="Steph Test API", international=True):
-        send_transac_sms = sib_api_v3_sdk.SendTransacSms(sender=sender, recipient=to, content=content, type="transactional")
+        send_transac_sms = sib_api_v3_sdk.SendTransacSms(
+            sender=sender,
+            recipient=to,
+            content=content,
+            type="transactional"
+        )
 
         try:
             api_response = self.api_instance.send_transac_sms(send_transac_sms)

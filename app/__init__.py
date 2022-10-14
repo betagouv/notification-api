@@ -42,6 +42,7 @@ from app.clients.sms.sib import SendInBlueSMSClient
 
 load_dotenv()
 
+
 class SQLAlchemy(_SQLAlchemy):
     """We need to subclass SQLAlchemy in order to override create_engine options"""
 

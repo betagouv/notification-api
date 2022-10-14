@@ -340,6 +340,9 @@ def test_dao_get_provider_stats(notify_db_session):
     firetext = next(result for result in results if result.identifier == 'firetext')
     mmg = next(result for result in results if result.identifier == 'mmg')
 
+    sib_email = next(result for result in results if result.identifier == 'sib_email')
+    sib_sms = next(result for result in results if result.identifier == 'sib_sms')
+
     assert ses.display_name == 'AWS SES'
     assert ses.created_by_name is None
     assert ses.current_month_billable_sms == 0
@@ -347,11 +350,21 @@ def test_dao_get_provider_stats(notify_db_session):
     assert firetext.display_name == 'Firetext'
     assert firetext.notification_type == 'sms'
     assert firetext.supports_international is False
-    assert firetext.active is True
+    assert firetext.active is False
     assert firetext.current_month_billable_sms == 5
 
     assert mmg.identifier == 'mmg'
     assert mmg.display_name == 'MMG'
     assert mmg.supports_international is True
-    assert mmg.active is True
+    assert mmg.active is False
     assert mmg.current_month_billable_sms == 4
+
+    assert sib_email.identifier == 'sib_email'
+    assert sib_email.display_name == 'SendInBlue Email'
+    assert sib_email.supports_international is True
+    assert sib_email.active is True
+
+    assert sib_sms.identifier == 'sib_sms'
+    assert sib_sms.display_name == 'SendInBlue SMS'
+    assert sib_sms.supports_international is True
+    assert sib_sms.active is True
