@@ -53,6 +53,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     services:
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_DB: test_notification_api
+          POSTGRES_PASSWORD: postgres
+        ports:
+        - 5432:5432
       redis:
         image: redis
         ports:
