@@ -54,7 +54,7 @@ jobs:
     needs: build
     services:
       postgres:
-        image: postgres:13.4
+        image: postgres:11
         env:
           POSTGRES_DB: test_notification_api
           POSTGRES_PASSWORD: postgres
